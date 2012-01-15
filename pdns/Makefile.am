@@ -203,7 +203,7 @@ rec_channel_rec.cc selectmplexer.cc epollmplexer.cc sillyrecords.cc htimer.cc ht
 aes/dns_random.cc aes/aescrypt.c aes/aeskey.c aes/aestab.c aes/aes_modes.c \
 lua-pdns-recursor.cc lua-pdns-recursor.hh randomhelper.cc  \
 recpacketcache.cc recpacketcache.hh dns.cc nsecrecords.cc base32.cc \
-json_ws.cc json_ws.hh
+json_ws.cc json_ws.hh statmaster.cc statmaster.hh
 
 #../modules/gmysqlbackend/smysql.cc 
 

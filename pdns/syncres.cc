@@ -37,7 +37,9 @@
 #include "dns_random.hh"
 #include "lock.hh"
 #include "cachecleaner.hh"
+#include "statmaster.hh"
 
+StatMaster s_sm;
 __thread SyncRes::StaticStorage* t_sstorage;
 
 unsigned int SyncRes::s_maxnegttl;
@@ -956,6 +958,8 @@ int SyncRes::doResolveAt(set<string, CIStringCompare> nameservers, string auth, 
           continue;
         }
         LOG<<prefix<<qname<<": Got "<<(unsigned int)lwr.d_result.size()<<" answers from "<<*tns<<" ("<< remoteIP->toString() <<"), rcode="<<lwr.d_rcode<<", in "<<lwr.d_usec/1000<<"ms"<<endl;
+
+        s_sm.remNameserver(*remoteIP, qname, lwr.d_rcode, lwr.d_usec);
 
         /*  // for you IPv6 fanatics :-)
         if(remoteIP->sin4.sin_family==AF_INET6)
