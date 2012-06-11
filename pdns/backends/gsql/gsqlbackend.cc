@@ -91,7 +91,7 @@ bool GSQLBackend::isMaster(const string &domain, const string &ip)
     d_db->doQuery(output, d_result);
   }
   catch (SSqlException &e) {
-    throw AhuException("GSQLBackend unable to retrieve list of master domains: "+e.txtReason());
+    throw AhuException("GSQLBackend unable to check master status of domain "+domain+": "+e.txtReason());
   }
 
   if(d_result.empty())
