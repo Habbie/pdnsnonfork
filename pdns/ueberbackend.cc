@@ -63,6 +63,15 @@ int UeberBackend::s_s=-1; // ?
 #define RTLD_NOW RTLD_LAZY
 #endif
 
+// Helper function for contexts that conditionally want to rethrow AhuExceptions
+static void maybeThrowAhu(AhuException &ae, bool dothrow)
+{
+  if(dothrow)
+    throw;
+  else
+    L<<Logger::Warning<<"Ignoring exception from consistent backend: "<<ae.reason<<endl;
+}
+
 //! Loads a module and reports it to all UeberBackend threads
 bool UeberBackend::loadmodule(const string &name)
 {
@@ -202,7 +211,12 @@ void UeberBackend::getUnfreshSlaveInfos(vector<DomainInfo>* domains)
 {
   for ( vector< DNSBackend * >::iterator i = backends.begin(); i != backends.end(); ++i )
   {
-    ( *i )->getUnfreshSlaveInfos( domains );
+    try {
+      ( *i )->getUnfreshSlaveInfos( domains );
+    }
+    catch (AhuException &ae) {
+      maybeThrowAhu(ae, !::arg().mustDo("experimental-consistent-backends"));
+    }
   }  
 }
 
@@ -212,7 +226,12 @@ void UeberBackend::getUpdatedMasters(vector<DomainInfo>* domains)
 {
   for ( vector< DNSBackend * >::iterator i = backends.begin(); i != backends.end(); ++i )
   {
-    ( *i )->getUpdatedMasters( domains );
+    try {
+      ( *i )->getUpdatedMasters( domains );
+    }
+    catch (AhuException &ae) {
+      maybeThrowAhu(ae, !::arg().mustDo("experimental-consistent-backends"));
+    }
   }
 }
 
