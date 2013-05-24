@@ -30,19 +30,35 @@ securezone ()
 	local configname=$2
 	if [ -n "$configname" ]
 	then
-		configname="--config-name=$configname"
+		config="--config-name=$configname"
+		bigkeyconfig="--config-name=${configname}-bigkey"
+		bigkeyconfigname=${configname}-bigkey
+		cp pdns-${configname}.conf pdns-${bigkeyconfigname}.conf
+	else
+		bigkeyconfig="--config-name=bigkey"
+		bigkeyconfigname=bigkey
+		cp pdns.conf pdns-bigkey.conf
+
 	fi
+
+	cat >> pdns-${bigkeyconfigname}.conf << __EOF__
+default-zsk-size=8192
+default-ksk-size=8192
+default-ksk-algorithms=rsasha512
+default-zsk-algorithms=rsasha512
+__EOF__
+
 	if [ "${zone: 0:16}" = "secure-delegated" ]
 	then
 		../pdns/pdnssec --config-dir=. $configname import-zone-key $zone $zone.key ksk 2>&1
 		../pdns/pdnssec --config-dir=. $configname add-zone-key $zone 1024 zsk 2>&1
-		keyid=`../pdns/pdnssec --config-dir=. $configname show-zone $zone | grep ZSK | cut -d' ' -f3`
+		keyid=`../pdns/pdnssec --config-dir=. $config show-zone $zone | grep ZSK | cut -d' ' -f3`
 		../pdns/pdnssec --config-dir=. $configname activate-zone-key $zone $keyid 2>&1
 		../pdns/pdnssec --config-dir=. $configname add-zone-key $zone 1024 zsk 2>&1
 		../pdns/pdnssec --config-dir=. $configname rectify-zone $zone 2>&1
         elif [ "${zone}" = "bigkey.com" ]
         then
-                 ../pdns/pdnssec --config-dir=. --config-name=bigkey secure-zone bigkey.com
+                 ../pdns/pdnssec --config-dir=. $bigkeyconfig secure-zone bigkey.com
 
                  if [ "${context: 12:12}" = "nsec3-narrow" ]; then
                     ../pdns/pdnssec --config-dir=. --config-name=bigkey set-nsec3 "1 0 1 f1b4" narrow
