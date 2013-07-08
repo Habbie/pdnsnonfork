@@ -648,7 +648,7 @@ then
 			--gmysql-user="$GMYSQL2USER" \
 			--gmysql-host="$GMYSQL2HOST" \
 			--gmysql-password="$GMYSQL2PASSWD" \
-			--config-name=gmysql2 |& egrep -v "update records set ordername|insert into records" &
+			--config-name=gmysql2 | egrep -v "update records set ordername|insert into records" &
 		echo 'waiting for zones to be slaved'
 		loopcount=0
 		while [ $loopcount -lt 20 ]
@@ -684,7 +684,7 @@ then
 			--fancy-records --send-root-referral \
 			--cache-ttl=0 --query-cache-ttl=0 --no-config --slave --retrieval-threads=4 \
 			--gsqlite3-database=pdns.sqlite31 --gsqlite3-pragma-synchronous=0 \
-			--config-name=gsqlite32 |& egrep -v "update records set ordername|insert into records" &
+			--config-name=gsqlite32 | egrep -v "update records set ordername|insert into records" &
 		echo 'waiting for zones to be slaved'
 		set +e
 		loopcount=0
